@@ -1,0 +1,9 @@
+fatty_acid:
+  area_threshold: 1.0
+  standard_file: "standard.xlsx"
+  experimental_file: "experimental.xlsx"
+  output_file: "processed_data.xlsx"
+
+log:
+  level: "info"
+  file_path: "app.log"

@@ -1,0 +1,29 @@
+# data files
+*.csv
+**.xlsx
+
+# ide
+.vscode/
+.idea/
+
+# runtime files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# go vendor
+vendor/
+
+# system files
+.history/
+.DS_Store
+Thumbs.db
+*~
+*.swp
+*.swo
+.env
+
+# log files
+*.log
