@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/YeSZ1520/biotools/internal/fatty-acid/model"
-	"github.com/YeSZ1520/biotools/internal/fatty-acid/utils"
+	"github.com/YeSZ1520/biotools/internal/utils"
 
 	"github.com/sirupsen/logrus"
 	"github.com/xuri/excelize/v2"
@@ -77,17 +77,6 @@ func LoadExperimentalData(data_path string) ([]model.Experimental, error) {
 		firstRow := cleanedRows[0]
 		if len(firstRow)%4 != 0 {
 			logrus.Warnf("Sheet %s 表头列数 %d 不正确，跳过", sheetName, len(firstRow))
-			continue
-		}
-		headValid := true
-		for i := 0; i < len(firstRow); i += 4 {
-			if strings.TrimSpace(firstRow[i]) != "峰号" && strings.TrimSpace(firstRow[i+1]) != "保留时间" && strings.TrimSpace(firstRow[i+2]) != "峰面积" && strings.TrimSpace(firstRow[i+3]) != "面积百分比" {
-				logrus.Warnf("Sheet %s 表头格式不正确，跳过", sheetName)
-				headValid = false
-				break
-			}
-		}
-		if !headValid {
 			continue
 		}
 		// 解析数据行
