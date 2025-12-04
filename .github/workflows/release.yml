@@ -1,0 +1,50 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'release*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [ linux, windows ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24.2'
+
+      - name: Prepare config.yaml
+        run: |
+          cp configs/config.example.yaml config.yaml
+
+      - name: Build binary
+        run: |
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o fatty-acid.exe ./cmd/fatty-acid/
+          else
+            CGO_ENABLED=0 GOOS=${{ matrix.goos }} GOARCH=amd64 go build -o fatty-acid ./cmd/fatty-acid/
+          fi
+
+      - name: Package files
+        run: |
+          if [ "${{ matrix.goos }}" = "windows" ]; then
+            zip fatty-acid-windows.zip fatty-acid.exe config.yaml
+          else
+            tar -czf fatty-acid-linux.tar.gz fatty-acid config.yaml
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: fatty-acid-${{ matrix.goos }}
+          path: |
+            fatty-acid-*.zip
+            fatty-acid-*.tar.gz
