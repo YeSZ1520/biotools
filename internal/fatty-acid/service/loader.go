@@ -24,15 +24,14 @@ func LoadStandardData(data_path string) ([]model.Standard, error) {
 	sheetList := f.GetSheetList()
 	logrus.Infof("找到 Sheet： %v", sheetList)
 	var standards []model.Standard
-	for _, sheetName := range sheetList {
-		rows, err := f.GetRows(sheetName)
-		if err != nil {
-			logrus.Errorf("获取行失败 %s: %v", sheetName, err)
-			continue
-		}
 
+	excelData,err:= utils.ReadTable(data_path,true)
+	if err != nil {
+		return nil, err
+	}
+	for _, rows := range excelData {
 		for _, row := range rows {
-			if len(row) >= 6 && row[0] != "" && utils.IsInteger(row[0]) {
+			if len(row) >= 6 && utils.IsInteger(row[0]) {
 				var item model.Standard
 				fmt.Sscanf(row[0], "%d", &item.ID)
 				item.Code = row[1]
@@ -44,7 +43,6 @@ func LoadStandardData(data_path string) ([]model.Standard, error) {
 			}
 		}
 	}
-
 	return standards, nil
 }
 
@@ -58,23 +56,21 @@ func LoadExperimentalData(data_path string) ([]model.Experimental, error) {
 	}
 	defer f.Close()
 
-	sheetList := f.GetSheetList()
 	var experimentals []model.Experimental
 
-	for _, sheetName := range sheetList {
-		rows, err := f.GetRows(sheetName)
-		if err != nil {
-			logrus.Errorf("获取行失败 %s: %v", sheetName, err)
-			continue
-		}
-		// 去除空行和空列
-		cleanedRows := utils.CleanExcelData(rows)
-		if len(cleanedRows) == 0 {
+	excelData, err:= utils.ReadTable(data_path,true)
+	if err != nil {
+		return nil, err
+	}
+
+	for sheetName, rows := range excelData {
+
+		if len(rows) == 0 {
 			logrus.Warnf("Sheet %s 清理后无数据，跳过", sheetName)
 			continue
 		}
 		// 表头校验
-		firstRow := cleanedRows[0]
+		firstRow := rows[0]
 		if len(firstRow)%4 != 0 {
 			logrus.Warnf("Sheet %s 表头列数 %d 不正确，跳过", sheetName, len(firstRow))
 			continue
@@ -82,7 +78,7 @@ func LoadExperimentalData(data_path string) ([]model.Experimental, error) {
 		// 解析数据行
 		groupIndex := 1
 		for i := 0; i < len(firstRow); i += 4 {
-			for _, row := range cleanedRows {
+			for _, row := range rows {
 				id := row[i]
 				if id == "" || strings.TrimSpace(id) == "总计" || !utils.IsInteger(id) {
 					continue
