@@ -8,21 +8,13 @@ import (
 	"github.com/YeSZ1520/biotools/internal/utils"
 
 	"github.com/sirupsen/logrus"
-	"github.com/xuri/excelize/v2"
 )
 
 func LoadStandardData(data_path string) ([]model.Standard, error) {
 	if data_path == "" {
 		return nil, fmt.Errorf("参考数据路径不能为空")
 	}
-	f, err := excelize.OpenFile(data_path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-
-	sheetList := f.GetSheetList()
-	logrus.Infof("找到 Sheet： %v", sheetList)
+	
 	var standards []model.Standard
 
 	excelData,err:= utils.ReadTable(data_path,true)
@@ -50,11 +42,6 @@ func LoadExperimentalData(data_path string) ([]model.Experimental, error) {
 	if data_path == "" {
 		return nil, fmt.Errorf("实验数据路径不能为空")
 	}
-	f, err := excelize.OpenFile(data_path)
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
 
 	var experimentals []model.Experimental
 
