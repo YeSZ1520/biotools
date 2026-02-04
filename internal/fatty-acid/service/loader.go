@@ -24,6 +24,9 @@ func LoadStandardData(data_path string) ([]model.Standard, error) {
 	for _, rows := range excelData {
 		for _, row := range rows {
 			if len(row) >= 6 && utils.IsInteger(row[0]) {
+				if strings.TrimSpace(row[2]) == "" {
+					continue
+				}
 				var item model.Standard
 				fmt.Sscanf(row[0], "%d", &item.ID)
 				item.Code = row[1]
