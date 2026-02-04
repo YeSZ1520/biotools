@@ -1,31 +1,31 @@
 package main
 
 import (
-
+	"github.com/YeSZ1520/biotools/internal/config"
 	"github.com/YeSZ1520/biotools/internal/qpcr/service"
 
-	"encoding/json"
+	"github.com/sirupsen/logrus"
 )
 
-
 func main() {
-	data,err:=service.LoadExperimentalData("data2.xlsx")
-	if err!=nil{
-		panic(err)
+	cfg, err := config.GetConfig()
+	if err != nil {
+		logrus.Fatalf("获取配置失败: %v", err)
+	}
+
+	data, err := service.LoadExperimentalData(cfg.Qpcr.ExperimentalFile)
+	if err != nil {
+		logrus.Fatalf("加载实验数据失败: %v", err)
 	}
 
 	formatData := service.FormatExperimentalData(data)
 
-	formattedJsonData,err:=json.MarshalIndent(formatData,"","  ")
-	if err!=nil{
-		panic(err)
-	}
-	println(string(formattedJsonData))
-
-	results,err:=service.Calculate(formatData,"b-actin-1","LFD",2)
-	if err!=nil{
-		panic(err)
+	results, err := service.Calculate(formatData, cfg.Qpcr.BaseLineGene, cfg.Qpcr.BaseLineSamplePrefix, cfg.Qpcr.DropCount)
+	if err != nil {
+		logrus.Fatalf("计算结果失败: %v", err)
 	}
 
-	service.SaveData("output.xlsx",results)
+	if err := service.SaveData(cfg.Qpcr.OutputFile, results); err != nil {
+		logrus.Fatalf("保存结果失败: %v", err)
+	}
 }

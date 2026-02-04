@@ -4,6 +4,13 @@ fatty_acid:
   experimental_file: "experimental.xlsx"
   output_file: "processed_data.xlsx"
 
+qpcr:
+  experimental_file: "data2.xlsx"
+  output_file: "output.xlsx"
+  baseline_gene: "b-actin-1"
+  baseline_sample_prefix: "LFD"
+  drop_count: 2
+
 log:
   level: "info"
   file_path: ""

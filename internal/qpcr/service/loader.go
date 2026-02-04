@@ -32,8 +32,10 @@ func LoadExperimentalData(data_path string) ([]model.ExperimentalRaw, error) {
 	return experimentals, nil
 }
 
+// FormatExperimentalData 按基因和样本编号对原始 qPCR 数据分组，
 func FormatExperimentalData(raws []model.ExperimentalRaw) map[string]map[string]*model.Experimental {
 	data := make(map[string]map[string]*model.Experimental)
+	// 按基因和样本编号，并归集孔位 Ct 数据
 	for _, raw := range raws {
 		if _, ok := data[raw.Gene]; !ok {
 			data[raw.Gene] = make(map[string]*model.Experimental)
@@ -50,6 +52,7 @@ func FormatExperimentalData(raws []model.ExperimentalRaw) map[string]map[string]
 			Ct:   raw.Ct,
 		})
 	}
+	// 计算每个样本的平均 Ct
 	for _, samples := range data {
 		for _, exp := range samples {
 			var sum float64

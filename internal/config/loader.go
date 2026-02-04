@@ -65,6 +65,22 @@ func (c *AppConfig) validate() error {
 	if c.FattyAcid.OutputFile == "" {
 		return fmt.Errorf("输出文件路径不能为空")
 	}
+	// 验证QpcrConfig
+	if c.Qpcr.ExperimentalFile == "" {
+		return fmt.Errorf("qPCR 实验数据文件路径不能为空")
+	}
+	if c.Qpcr.OutputFile == "" {
+		return fmt.Errorf("qPCR 输出文件路径不能为空")
+	}
+	if c.Qpcr.BaseLineGene == "" {
+		return fmt.Errorf("qPCR 基线基因不能为空")
+	}
+	if c.Qpcr.BaseLineSamplePrefix == "" {
+		return fmt.Errorf("qPCR 基线样本前缀不能为空")
+	}
+	if c.Qpcr.DropCount < 0 {
+		return fmt.Errorf("qPCR 异常值剔除数量不能为负数")
+	}
 	return nil
 }
 
